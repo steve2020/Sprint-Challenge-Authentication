@@ -1,4 +1,24 @@
 const fetch = require('node-fetch');
+const jwt = require('jsonwebtoken');
+const { mysecret } = require('../../config');
+
+function authenticate(req, res, next) {
+  const token = req.headers.authorization;
+  if (token) {
+    jwt.verify(token, secret, (err, decodedToken) => {
+      if (err) {
+        return res
+          .status(401)
+          .json({ message: 'you shall not pass! not decoded' });
+      }
+      req.decoded = decodedToken;
+      next();
+    });
+  } else {
+    res.status(401).json({ message: 'you shall not pass! no token' });
+  }
+}
+
 
 const getAllJokes = (req, res) => {
   if (req.decoded) {
